@@ -1,0 +1,25 @@
+# .github/workflows/ci.yml
+# Based on https://github.com/deftio/C-and-Cpp-Tests-with-CI-CD-Example/blob/master/.github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
+      - name: Build
+        run: |
+          make all
