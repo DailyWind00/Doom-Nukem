@@ -15,7 +15,17 @@ CFLAGS := -Wall -Wextra # -Werror
 MLX_FLAGS := -ldl -lglfw -pthread -lm
 RM := rm -f
 
+DEBUG := 0
+ifeq ($(DEBUG), 1)
+	CFLAGS += -g3 -fsanitize=address
+else
+	CFLAGS += -Ofast
+endif
+
 all: dependencies $(CLIENT_NAME) $(EDITOR_NAME)
+
+debug: clean
+	@$(MAKE) DEBUG=1 all
 
 $(CLIENT_NAME): $(CLIENT_OBJS)
 	$(CC) -o $@ $^ $(MLX_LIB) $(CFLAGS) $(MLX_FLAGS)
@@ -27,7 +37,7 @@ $(EDITOR_NAME): $(EDITOR_OBJS)
 	$(CC) -c $< -o $@ $(CFLAGS) $(INCLUDES_PATH)
 
 dependencies:
-	if [ ! -d dependencies ]; then \
+	@if [ ! -d dependencies ]; then \
 		mkdir dependencies && \
 		cd dependencies && \
 		git clone https://github.com/codam-coding-college/MLX42.git && \
@@ -45,4 +55,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all dependencies clean fclean re
+.PHONY: all debug dependencies clean fclean re
