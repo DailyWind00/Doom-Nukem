@@ -7,6 +7,16 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+        environment:
+            description: 'The environment to run the tests in'
+            required: true
+            default: 'Release'
+            type: choice
+            options:
+              - Release
+              - Debug
 
 jobs:
   build:
@@ -18,8 +28,14 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make
+          sudo apt-get install -y make cmake
+          sudo apt-get install -y libgl1-mesa-dev libglu1-mesa-dev libglfw3-dev
+          sudo apt-get install -y libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
 
       - name: Build
         run: |
-          make all
+          if [ "${{ github.event.inputs.environment }}" == "Debug" ]; then
+            make debug
+          else
+            make all
+          fi
